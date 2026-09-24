@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Chronvyr.Views.CalendarPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:Chronvyr.Models"
+    xmlns:vm="using:Chronvyr.ViewModels"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+
+        <!-- 日期单元格：只渲染本月日期，上下月补位格留空（FR-2.1） -->
+        <DataTemplate x:Key="DayCellTemplate" x:DataType="vm:CalendarDayViewModel">
+            <Grid
+                ToolTipService.ToolTip="{x:Bind TooltipText}"
+                Visibility="{x:Bind IsCurrentMonth}">
+
+                <Border
+                    Margin="3"
+                    Background="{ThemeResource ChronvyrCardBrush}"
+                    BorderBrush="{ThemeResource ChronvyrCardStrokeBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8" />
+
+                <Border
+                    Margin="3"
+                    BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Visibility="{x:Bind IsSelected, Mode=OneWay}" />
+
+                <StackPanel
+                    Margin="12,9,12,9"
+                    Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock
+                            FontSize="15"
+                            FontWeight="SemiBold"
+                            Text="{x:Bind DayText}" />
+                        <Border
+                            Padding="5,0"
+                            Background="#D64545"
+                            CornerRadius="4"
+                            ToolTipService.ToolTip="{x:Bind vm:CalendarDayViewModel.RestTip}"
+                            Visibility="{x:Bind IsOffDay}">
+                            <TextBlock
+                                FontSize="10"
+                                Foreground="White"
+                                Text="{x:Bind vm:CalendarDayViewModel.RestLabel}" />
+                        </Border>
+                        <Border
+                            Padding="5,0"
+                            Background="#7A7A7A"
+                            CornerRadius="4"
+                            ToolTipService.ToolTip="{x:Bind vm:CalendarDayViewModel.MakeupTip}"
+                            Visibility="{x:Bind IsWorkday}">
+                            <TextBlock
+                                FontSize="10"
+                                Foreground="White"
+                                Text="{x:Bind vm:CalendarDayViewModel.MakeupLabel}" />
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 今天标记 -->
+                <Ellipse
+                    Width="6"
+                    Height="6"
+                    Margin="0,10,14,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Fill="{ThemeResource AccentFillColorDefaultBrush}"
+                    Visibility="{x:Bind IsToday}" />
+
+                <!-- 有日程标记（FR-2.2） -->
+                <Ellipse
+                    Width="6"
+                    Height="6"
+                    Margin="0,0,0,9"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Fill="{ThemeResource AccentFillColorDefaultBrush}"
+                    Visibility="{x:Bind HasSchedule, Mode=OneWay}" />
+            </Grid>
+        </DataTemplate>
+
+        <!-- 当日日程条目 -->
+        <DataTemplate x:Key="ScheduleItemTemplate" x:DataType="models:ScheduleItem">
+            <Border
+                Margin="0,0,0,8"
+                Padding="10,8"
+                Background="{ThemeResource ChronvyrCardBrush}"
+                BorderBrush="{ThemeResource ChronvyrCardStrokeBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox
+                        Grid.Column="0"
+                        MinWidth="0"
+                        VerticalAlignment="Center"
+                        IsChecked="{x:Bind IsCompleted, Mode=TwoWay}" />
+                    <StackPanel Grid.Column="1" Spacing="3">
+                        <TextBlock
+                            FontWeight="SemiBold"
+                            Text="{x:Bind Title, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+                        <TextBlock
+                            Style="{StaticResource ChronvyrSubtleTextStyle}"
+                            Text="{x:Bind RangeText, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <Style x:Key="DayCellStyle" TargetType="ContentControl">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="UseSystemFocusVisuals" Value="False" />
+        </Style>
+
+    </Page.Resources>
+
+    <Grid Style="{StaticResource ChronvyrPageRootStyle}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="*" MinWidth="280" />
+        </Grid.ColumnDefinitions>
+
+        <!-- 月历（液态玻璃） -->
+        <Border
+            Grid.Column="0"
+            Padding="18"
+            Style="{StaticResource ChronvyrCardStyle}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="0,0,0,14">
+                    <StackPanel
+                        Orientation="Horizontal"
+                        Spacing="10"
+                        VerticalAlignment="Center">
+                        <Button Command="{x:Bind ViewModel.PreviousMonthCommand}">
+                            <FontIcon FontSize="12" Glyph="&#xE76B;" />
+                        </Button>
+                        <TextBlock
+                            MinWidth="140"
+                            VerticalAlignment="Center"
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Text="{x:Bind ViewModel.MonthTitle, Mode=OneWay}" />
+                        <Button Command="{x:Bind ViewModel.NextMonthCommand}">
+                            <FontIcon FontSize="12" Glyph="&#xE76C;" />
+                        </Button>
+                        <Button Content="{x:Bind Loc.T('CalendarToday')}" Command="{x:Bind ViewModel.TodayCommand}" />
+                        <!-- 平时直接用本地缓存，点这里才强制联网重拉节假日 -->
+                        <Button
+                            Command="{x:Bind ViewModel.RefreshHolidaysCommand}"
+                            ToolTipService.ToolTip="{x:Bind Loc.T('HolidayRefreshTip')}">
+                            <FontIcon FontSize="13" Glyph="&#xE72C;" />
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Spacing="14"
+                        VerticalAlignment="Center">
+                        <!-- 天气（与胶囊栏同源） -->
+                        <StackPanel
+                            Orientation="Horizontal"
+                            Spacing="6"
+                            VerticalAlignment="Center">
+                            <FontIcon
+                                FontSize="14"
+                                Glyph="&#xE9B9;"
+                                Opacity="0.75" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="13"
+                                Text="{x:Bind ViewModel.WeatherText, Mode=OneWay}" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Style="{StaticResource ChronvyrSubtleTextStyle}"
+                                Text="{x:Bind ViewModel.WeatherCity, Mode=OneWay}" />
+                        </StackPanel>
+
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Style="{StaticResource ChronvyrSubtleTextStyle}"
+                            Text="{x:Bind ViewModel.HolidayNotice, Mode=OneWay}" />
+                        <ProgressRing
+                            Width="18"
+                            Height="18"
+                            IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="WeekHeaderGrid" Grid.Row="1" Margin="0,0,0,6" />
+
+                <Grid x:Name="DaysGrid" Grid.Row="2" />
+            </Grid>
+        </Border>
+
+        <!-- 当日日程（液态玻璃） -->
+        <Border
+            Grid.Column="2"
+            Padding="18"
+            Style="{StaticResource ChronvyrCardStyle}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    Margin="0,0,0,14"
+                    FontSize="16"
+                    FontWeight="SemiBold"
+                    Text="{x:Bind ViewModel.SelectedDateTitle, Mode=OneWay}"
+                    TextWrapping="Wrap" />
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <ItemsControl
+                            ItemTemplate="{StaticResource ScheduleItemTemplate}"
+                            ItemsSource="{x:Bind ViewModel.SelectedSchedules}" />
+                        <TextBlock
+                            Margin="0,24,0,0"
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource ChronvyrSubtleTextStyle}"
+                            Text="{x:Bind Loc.T('CalendarNoSchedule')}"
+                            Visibility="{x:Bind ViewModel.IsSelectedEmpty, Mode=OneWay}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

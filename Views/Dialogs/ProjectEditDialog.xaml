@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="Chronvyr.Views.Dialogs.ProjectEditDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    CloseButtonText="取消"
+    DefaultButton="Primary"
+    PrimaryButtonText="保存">
+
+    <ScrollViewer MaxHeight="520" VerticalScrollBarVisibility="Auto">
+        <StackPanel MinWidth="460" Spacing="14">
+            <TextBox
+                x:Name="NameBox"
+                Header="项目名称"
+                PlaceholderText="项目名"
+                TextWrapping="Wrap" />
+
+            <TextBox
+                x:Name="VersionBox"
+                Header="当前版本号"
+                PlaceholderText="1.0.0" />
+
+            <NumberBox
+                x:Name="ProgressBox"
+                Header="开发进度（%）"
+                Maximum="100"
+                Minimum="0"
+                SpinButtonPlacementMode="Inline" />
+
+            <TextBlock
+                Margin="0,6,0,0"
+                Style="{StaticResource ChronvyrSectionTitleStyle}"
+                Text="更新日志" />
+
+            <StackPanel x:Name="LogsPanel" Spacing="10" />
+
+            <Button HorizontalAlignment="Left" Click="OnAddLogClick">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="14" Glyph="&#xE710;" />
+                    <TextBlock Text="添加日志条目" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </ScrollViewer>
+</ContentDialog>

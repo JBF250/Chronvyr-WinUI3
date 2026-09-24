@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Chronvyr.Views.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="48">
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Spacing="18">
+
+            <!-- 账户头像：微软账户头像，取不到时回退为默认用户图标 -->
+            <Grid
+                Width="104"
+                Height="104"
+                HorizontalAlignment="Center">
+                <Ellipse Fill="{ThemeResource ChronvyrCardHoverBrush}" />
+                <FontIcon
+                    x:Name="AvatarPlaceholder"
+                    FontSize="54"
+                    Foreground="{ThemeResource ChronvyrSubtleTextBrush}"
+                    Glyph="&#xE77B;" />
+                <Ellipse x:Name="AvatarClip" Visibility="Collapsed">
+                    <Ellipse.Fill>
+                        <ImageBrush x:Name="AvatarBrush" Stretch="UniformToFill" />
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Grid>
+
+            <TextBlock
+                x:Name="GreetingText"
+                HorizontalAlignment="Center"
+                Style="{StaticResource TitleLargeTextBlockStyle}"
+                Text="{x:Bind Loc.T('Greeting')}" />
+
+            <TextBlock
+                x:Name="ClockText"
+                HorizontalAlignment="Center"
+                FontSize="72"
+                FontWeight="SemiBold"
+                Text="--:--:--" />
+
+            <TextBlock
+                x:Name="DateText"
+                HorizontalAlignment="Center"
+                Opacity="0.7"
+                Style="{StaticResource SubtitleTextBlockStyle}"
+                Text="----" />
+        </StackPanel>
+    </Grid>
+</Page>

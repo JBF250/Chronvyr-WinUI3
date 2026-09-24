@@ -1,0 +1,110 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>Chronvyr</RootNamespace>
+    <AssemblyName>Chronvyr</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\Chronvyr.ico</ApplicationIcon>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'AnyCPU'">x64</Platform>
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-$(Platform.ToLower())</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>false</EnableMsixTooling>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SelfContained>true</SelfContained>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefaultLanguage>zh-CN</DefaultLanguage>
+    <AssemblyTitle>Chronvyr</AssemblyTitle>
+    <Product>ChronvyrSchedule</Product>
+    <Version>1.0.0.0</Version>
+    <NeutralLanguage>zh-CN</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--
+      必须保留 WindowsAppSDK 元包：它负责把 MSIX BuildTools 的 props/targets
+      正确挂到 CustomBeforeMicrosoftCommonTargets 上，直接换成子包会编译失败。
+      改为排除用不到的子包的运行时资产——本项目没有任何 AI / Widget 功能，
+      光是 onnxruntime.dll + DirectML.dll 就有 38 MB。
+    -->
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260804001" />
+    <PackageReference Update="Microsoft.WindowsAppSDK.ML" ExcludeAssets="runtime" />
+    <PackageReference Update="Microsoft.WindowsAppSDK.AI" ExcludeAssets="runtime" />
+    <PackageReference Update="Microsoft.WindowsAppSDK.Widgets" ExcludeAssets="runtime" />
+
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="H.NotifyIcon.WinUI" Version="2.3.2" />
+
+    <!--
+      不用 NAudio 元包：它会带上 NAudio.WinForms，
+      进而把整个 System.Windows.Forms（约 23 MB）复制进发布目录。
+      本项目只用到 WASAPI 环回捕获。
+    -->
+    <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+
+    <!--
+      桌面控件改用 SkiaSharp 自绘（Win32 分层窗口 + UpdateLayeredWindow）。
+      之所以脱离 XAML：WinUI 3 做不到窗口背景真透明，导致圆角外必然露出窗口底色
+      （实测顶部有 4 物理像素纯白边），也无法绘制窗口投影。
+      版本与参考项目 NotchPeninsula 保持一致，降低兼容风险。
+    -->
+    <PackageReference Include="SkiaSharp" Version="2.88.8" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="2.88.8" />
+    <PackageReference Include="NAudio.Core" Version="2.2.1" />
+  </ItemGroup>
+
+  <!--
+    只保留我们真正提供的语言资源，去掉 NuGet 自带的 af-ZA / am-ET 等
+    几十个卫星程序集（发布目录里那些 xx-XX 文件夹），显著减小体积。
+  -->
+  <PropertyGroup>
+    <SatelliteResourceLanguages>zh-Hans;zh-Hant;en;ja</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!--
+    仅靠 SatelliteResourceLanguages 清不掉 Windows App SDK 自包含运行时的语言目录；另外还要删掉用不到的 AI/ML 运行时。
+    因此发布后再跑一次清理脚本。
+  -->
+  <Target Name="TrimPublishOutput" AfterTargets="Publish">
+    <Exec
+      Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\..\tools\trim-publish.ps1&quot; -PublishDir &quot;$(PublishDir).&quot;"
+      ContinueOnError="true"
+      StandardOutputImportance="high"
+      StandardErrorImportance="high" />
+  </Target>
+
+  <ItemGroup>
+    <Content Include="Assets\Chronvyr.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Chronvyr.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!--
+    WinUI3 非打包应用在执行 dotnet publish 时不会自动把 XAML 资源（Chronvyr.pri 与各 .xbf）
+    复制到发布目录，缺少它们会在启动时抛出 XamlParseException（XAML parsing failed）。
+    这里在 Publish 之后显式补齐。
+  -->
+  <Target Name="CopyXamlResourcesToPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <ChronvyrXamlResource Include="$(TargetDir)**\*.pri" />
+      <ChronvyrXamlResource Include="$(TargetDir)**\*.xbf" />
+      <ChronvyrXamlResource Remove="$(PublishDir)**\*" />
+    </ItemGroup>
+    <Copy
+      SkipUnchangedFiles="true"
+      SourceFiles="@(ChronvyrXamlResource)"
+      DestinationFiles="@(ChronvyrXamlResource->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Message Importance="high" Text="Chronvyr：已补齐 XAML 资源到发布目录（@(ChronvyrXamlResource->Count()) 个文件）" />
+  </Target>
+
+</Project>

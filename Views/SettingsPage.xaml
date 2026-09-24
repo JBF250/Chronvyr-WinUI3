@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Chronvyr.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="using:Chronvyr.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <conv:InverseBoolConverter x:Key="InverseBool" />
+    </Page.Resources>
+
+    <!--
+        滚动条常显：展开 Expander 时若滚动条突然出现/消失，
+        可视宽度会跳变，看起来就像「外框先瞬间变长、内容才开始动画」。
+    -->
+    <ScrollViewer VerticalScrollBarVisibility="Visible">
+        <!--
+            用 Grid 撑满视口、再让 StackPanel 在其中居中。
+            直接给 StackPanel 设 Stretch + MaxWidth 在 WinUI 里并不会居中（实测明显偏右）。
+        -->
+        <Grid>
+            <StackPanel
+                MaxWidth="920"
+                HorizontalAlignment="Stretch"
+                Spacing="16">
+
+            <!-- 视觉风格（FR-7.1）：三张圆角卡片 -->
+            <Border Padding="20" Style="{StaticResource ChronvyrCardStyle}">
+                <StackPanel Spacing="14">
+                    <TextBlock
+                        Margin="0"
+                        Style="{StaticResource ChronvyrSectionTitleStyle}"
+                        Text="{x:Bind Loc.T('SettingsStyle')}" />
+
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <!-- 跟随系统 -->
+                        <RadioButton
+                            GroupName="MainStyle"
+                            Tag="0"
+                            Checked="OnStyleRadioChecked"
+                            Style="{StaticResource ChronvyrStyleCardStyle}">
+                            <StackPanel Spacing="10">
+                                <Border
+                                    Width="150"
+                                    Height="64"
+                                    BorderBrush="{ThemeResource ChronvyrCardStrokeBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border
+                                            Grid.Column="0"
+                                            Background="#F3F3F3"
+                                            CornerRadius="7,0,0,7" />
+                                        <Border
+                                            Grid.Column="1"
+                                            Background="#202020"
+                                            CornerRadius="0,7,7,0" />
+                                    </Grid>
+                                </Border>
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    Text="{x:Bind Loc.T('StyleFollowSystem')}" />
+                            </StackPanel>
+                        </RadioButton>
+
+                        <!-- 浅色 -->
+                        <RadioButton
+                            GroupName="MainStyle"
+                            Tag="1"
+                            Checked="OnStyleRadioChecked"
+                            Style="{StaticResource ChronvyrStyleCardStyle}">
+                            <StackPanel Spacing="10">
+                                <Border
+                                    Width="150"
+                                    Height="64"
+                                    Background="#F3F3F3"
+                                    BorderBrush="{ThemeResource ChronvyrCardStrokeBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    Text="{x:Bind Loc.T('StyleLight')}" />
+                            </StackPanel>
+                        </RadioButton>
+
+                        <!-- 深色 -->
+                        <RadioButton
+                            GroupName="MainStyle"
+                            Tag="2"
+                            Checked="OnStyleRadioChecked"
+                            Style="{StaticResource ChronvyrStyleCardStyle}">
+                            <StackPanel Spacing="10">
+                                <Border
+                                    Width="150"
+                                    Height="64"
+                                    Background="#202020"
+                                    BorderBrush="{ThemeResource ChronvyrCardStrokeBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    Text="{x:Bind Loc.T('StyleDark')}" />
+                            </StackPanel>
+                        </RadioButton>
+                    </StackPanel>
+
+                    <TextBlock
+                        Style="{StaticResource ChronvyrSubtleTextStyle}"
+                        Text="{x:Bind ViewModel.StyleHint, Mode=OneWay}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <!-- 界面语言（FR-1.5） -->
+            <Border Padding="20" Style="{StaticResource ChronvyrCardStyle}">
+                <StackPanel Spacing="14">
+                    <TextBlock
+                        Margin="0"
+                        Style="{StaticResource ChronvyrSectionTitleStyle}"
+                        Text="{x:Bind Loc.T('SettingsLanguage')}" />
+
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <RadioButton
+                            x:Name="LangZh"
+                            Content="简体中文"
+                            GroupName="UiLanguage"
+                            Tag="0"
+                            Checked="OnLanguageRadioChecked" />
+                        <RadioButton
+                            x:Name="LangZhHant"
+                            Content="繁體中文"
+                            GroupName="UiLanguage"
+                            Tag="1"
+                            Checked="OnLanguageRadioChecked" />
+                        <RadioButton
+                            x:Name="LangEn"
+                            Content="English"
+                            GroupName="UiLanguage"
+                            Tag="2"
+                            Checked="OnLanguageRadioChecked" />
+                        <RadioButton
+                            x:Name="LangJa"
+                            Content="日本語"
+                            GroupName="UiLanguage"
+                            Tag="3"
+                            Checked="OnLanguageRadioChecked" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- 桌面控件（FR-7.2） -->
+            <Border Padding="20" Style="{StaticResource ChronvyrCardStyle}">
+                <StackPanel Spacing="14">
+                    <TextBlock
+                        Margin="0"
+                        Style="{StaticResource ChronvyrSectionTitleStyle}"
+                        Text="{x:Bind Loc.T('SettingsWidgets')}" />
+                    <TextBlock
+                        Style="{StaticResource ChronvyrSubtleTextStyle}"
+                        Text="{x:Bind Loc.T('SettingsWidgetsHint')}"
+                        TextWrapping="Wrap" />
+
+                    <!-- 日记栏 -->
+                    <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                        <Expander.Header>
+                            <!-- 开关就放在标题旁边：改开关不必先展开子菜单 -->
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock VerticalAlignment="Center" Text="{x:Bind Loc.T('WidgetDiaryBar')}" />
+                                <ToggleSwitch
+                                    MinWidth="0"
+                                    IsOn="{x:Bind ViewModel.Settings.DiaryBar.IsEnabled, Mode=TwoWay}"
+                                    OffContent=""
+                                    OnContent="" />
+                            </StackPanel>
+                        </Expander.Header>
+                        <StackPanel Spacing="12">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ToggleSwitch
+                                    Grid.Column="0"
+                                    Header="{x:Bind Loc.T('WidgetUseMainStyle')}"
+                                    IsOn="{x:Bind ViewModel.Settings.DiaryBar.UseMainStyle, Mode=TwoWay}" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    Header="{x:Bind Loc.T('WidgetOwnStyle')}"
+                                    IsEnabled="{x:Bind ViewModel.Settings.DiaryBar.UseMainStyle, Mode=OneWay, Converter={StaticResource InverseBool}}"
+                                    SelectedIndex="{x:Bind ViewModel.Settings.DiaryBar.StyleIndex, Mode=TwoWay}">
+                                    <ComboBoxItem Content="{x:Bind Loc.T('StyleFollowSystem')}" />
+                                    <ComboBoxItem Content="{x:Bind Loc.T('StyleLight')}" />
+                                    <ComboBoxItem Content="{x:Bind Loc.T('StyleDark')}" />
+                                </ComboBox>
+                            </Grid>
+
+                            <TextBlock
+                                Style="{StaticResource ChronvyrSubtleTextStyle}"
+                                Text="{x:Bind Loc.T('WidgetDragHint')}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- 日程表 -->
+                    <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                        <Expander.Header>
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock VerticalAlignment="Center" Text="{x:Bind Loc.T('WidgetScheduleBoard')}" />
+                                <ToggleSwitch
+                                    MinWidth="0"
+                                    IsOn="{x:Bind ViewModel.Settings.ScheduleBoard.IsEnabled, Mode=TwoWay}"
+                                    OffContent=""
+                                    OnContent="" />
+                            </StackPanel>
+                        </Expander.Header>
+                        <StackPanel Spacing="12">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ToggleSwitch
+                                    Grid.Column="0"
+                                    Header="{x:Bind Loc.T('WidgetUseMainStyle')}"
+                                    IsOn="{x:Bind ViewModel.Settings.ScheduleBoard.UseMainStyle, Mode=TwoWay}" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    Header="{x:Bind Loc.T('WidgetOwnStyle')}"
+                                    IsEnabled="{x:Bind ViewModel.Settings.ScheduleBoard.UseMainStyle, Mode=OneWay, Converter={StaticResource InverseBool}}"
+                                    SelectedIndex="{x:Bind ViewModel.Settings.ScheduleBoard.StyleIndex, Mode=TwoWay}">
+                                    <ComboBoxItem Content="{x:Bind Loc.T('StyleFollowSystem')}" />
+                                    <ComboBoxItem Content="{x:Bind Loc.T('StyleLight')}" />
+                                    <ComboBoxItem Content="{x:Bind Loc.T('StyleDark')}" />
+                                </ComboBox>
+                            </Grid>
+
+                            <TextBlock
+                                Style="{StaticResource ChronvyrSubtleTextStyle}"
+                                Text="{x:Bind Loc.T('WidgetDragHint')}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- 胶囊栏 -->
+                    <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                        <Expander.Header>
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <TextBlock VerticalAlignment="Center" Text="{x:Bind Loc.T('WidgetDynamicIsland')}" />
+                                <ToggleSwitch
+                                    MinWidth="0"
+                                    IsOn="{x:Bind ViewModel.Settings.DynamicIsland.IsEnabled, Mode=TwoWay}"
+                                    OffContent=""
+                                    OnContent="" />
+                            </StackPanel>
+                        </Expander.Header>
+                        <StackPanel Spacing="12">
+                            <Grid ColumnSpacing="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ToggleSwitch
+                                    Grid.Column="0"
+                                    Header="{x:Bind Loc.T('WidgetUseMainStyle')}"
+                                    IsOn="{x:Bind ViewModel.Settings.DynamicIsland.UseMainStyle, Mode=TwoWay}" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Stretch"
+                                    Header="{x:Bind Loc.T('WidgetOwnStyle')}"
+                                    IsEnabled="{x:Bind ViewModel.Settings.DynamicIsland.UseMainStyle, Mode=OneWay, Converter={StaticResource InverseBool}}"
+                                    SelectedIndex="{x:Bind ViewModel.Settings.DynamicIsland.StyleIndex, Mode=TwoWay}">
+                                    <ComboBoxItem Content="{x:Bind Loc.T('StyleFollowSystem')}" />
+                                    <ComboBoxItem Content="{x:Bind Loc.T('StyleLight')}" />
+                                    <ComboBoxItem Content="{x:Bind Loc.T('StyleDark')}" />
+                                </ComboBox>
+                            </Grid>
+
+                            <!--
+                                胶囊栏固定吸附在屏幕顶部居中、不可拖动，
+                                所以这里给的是「多宽」和「离顶边多远」，而不是 X / Y 坐标。
+                            -->
+                            <Slider
+                                Header="{x:Bind Loc.T('WidgetWidth')}"
+                                Maximum="560"
+                                Minimum="240"
+                                StepFrequency="8"
+                                Value="{x:Bind ViewModel.DynamicIslandWidth, Mode=TwoWay}" />
+
+                            <Slider
+                                Header="{x:Bind Loc.T('WidgetTopGap')}"
+                                Maximum="200"
+                                Minimum="0"
+                                StepFrequency="4"
+                                Value="{x:Bind ViewModel.Settings.DynamicIsland.TopGap, Mode=TwoWay}" />
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </Border>
+
+            <!-- 启动（FR-7.3） -->
+            <Border Padding="20" Style="{StaticResource ChronvyrCardStyle}">
+                <StackPanel Spacing="14">
+                    <TextBlock
+                        Margin="0"
+                        Style="{StaticResource ChronvyrSectionTitleStyle}"
+                        Text="{x:Bind Loc.T('SettingsStartup')}" />
+
+                    <ToggleSwitch
+                        x:Name="AutoStartSwitch"
+                        Header="{x:Bind Loc.T('SettingsAutoStart')}"
+                        Toggled="OnAutoStartToggled" />
+                </StackPanel>
+            </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

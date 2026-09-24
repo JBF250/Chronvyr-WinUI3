@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="Chronvyr.Views.Dialogs.ScheduleDetailWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24,14,24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBox
+            x:Name="TitleBox"
+            Grid.Row="0"
+            FontSize="18"
+            FontWeight="SemiBold"
+            PlaceholderText="日程标题"
+            TextChanged="OnTitleChanged"
+            TextWrapping="Wrap" />
+
+        <StackPanel
+            Grid.Row="1"
+            Margin="0,10,0,10"
+            Spacing="8">
+            <!--
+                日期各占整行：中文的 DatePicker 要排下「2026年 / 9月 / 19日」三列，
+                半宽放不下会把「日」挤出可视区域。
+                只到「天」——使用者要的是「哪几天做这件事」，精确到分钟只会让填写变麻烦。
+            -->
+            <DatePicker
+                x:Name="StartDatePicker"
+                HorizontalAlignment="Stretch"
+                DateChanged="OnStartDateChanged"
+                Header="{x:Bind Loc.T('FieldStartDate')}" />
+            <DatePicker
+                x:Name="DueDatePicker"
+                HorizontalAlignment="Stretch"
+                DateChanged="OnDueDateChanged"
+                Header="{x:Bind Loc.T('FieldDueDate')}" />
+            <CheckBox
+                x:Name="CompletedBox"
+                Content="{x:Bind Loc.T('FieldCompleted')}"
+                Checked="OnCompletedChanged"
+                Unchecked="OnCompletedChanged" />
+        </StackPanel>
+
+        <TextBox
+            x:Name="DescBox"
+            Grid.Row="2"
+            AcceptsReturn="True"
+            PlaceholderText="补充说明…"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            TextChanged="OnDescChanged"
+            TextWrapping="Wrap" />
+    </Grid>
+</Window>

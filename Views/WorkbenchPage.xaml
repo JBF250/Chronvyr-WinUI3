@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="Chronvyr.Views.WorkbenchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="using:Chronvyr.Helpers"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:Chronvyr.Models"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <DataTemplate x:Key="ProjectCardTemplate" x:DataType="models:WorkProject">
+            <Border
+                Margin="0,0,16,16"
+                Padding="18"
+                Style="{StaticResource ChronvyrCardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Spacing="3">
+                        <TextBlock
+                            FontSize="17"
+                            FontWeight="SemiBold"
+                            Text="{x:Bind Name, Mode=OneWay}"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            Style="{StaticResource ChronvyrSubtleTextStyle}"
+                            Text="{x:Bind VersionText, Mode=OneWay}" />
+                    </StackPanel>
+
+                    <Grid
+                        Grid.Row="1"
+                        Margin="0,12"
+                        ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 环形百分比进度条（FR-6.3） -->
+                        <Grid
+                            Grid.Column="0"
+                            Width="76"
+                            Height="76"
+                            VerticalAlignment="Center">
+                            <Ellipse
+                                Width="70"
+                                Height="70"
+                                Opacity="0.45"
+                                Stroke="{ThemeResource ChronvyrDividerBrush}"
+                                StrokeThickness="3" />
+                            <ProgressRing
+                                Width="76"
+                                Height="76"
+                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                IsActive="True"
+                                IsIndeterminate="False"
+                                Value="{x:Bind Progress, Mode=OneWay}" />
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="15"
+                                FontWeight="SemiBold"
+                                Text="{x:Bind ProgressText, Mode=OneWay}" />
+                        </Grid>
+
+                        <StackPanel
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="4">
+                            <TextBlock Style="{StaticResource ChronvyrSubtleTextStyle}" Text="{x:Bind helpers:Loc.LatestUpdate}" />
+                            <TextBlock
+                                MaxLines="3"
+                                Text="{x:Bind LatestLogText, Mode=OneWay}"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel
+                        Grid.Row="2"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                        <Button Click="OnEditProjectClick" Tag="{x:Bind}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon FontSize="13" Glyph="&#xE70F;" />
+                                <TextBlock Text="{x:Bind helpers:Loc.Edit}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Click="OnDeleteProjectClick" Tag="{x:Bind}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon FontSize="13" Glyph="&#xE74D;" />
+                                <TextBlock Text="{x:Bind helpers:Loc.Delete}" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid Style="{StaticResource ChronvyrPageRootStyle}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="24"
+                FontWeight="SemiBold"
+                Text="{x:Bind Loc.T('WorkbenchTitle')}" />
+
+            <Button
+                HorizontalAlignment="Right"
+                Click="OnNewProjectClick"
+                Style="{StaticResource AccentButtonStyle}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon FontSize="14" Glyph="&#xE710;" />
+                    <TextBlock Text="{x:Bind Loc.T('WorkbenchNew')}" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <ScrollViewer
+            Grid.Row="1"
+            VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <ItemsRepeater
+                    ItemTemplate="{StaticResource ProjectCardTemplate}"
+                    ItemsSource="{x:Bind ViewModel.Projects}">
+                    <ItemsRepeater.Layout>
+                        <UniformGridLayout
+                            ItemsStretch="Fill"
+                            MinColumnSpacing="0"
+                            MinItemHeight="250"
+                            MinItemWidth="300"
+                            MinRowSpacing="0" />
+                    </ItemsRepeater.Layout>
+                </ItemsRepeater>
+
+                <StackPanel
+                    Margin="0,80,0,0"
+                    HorizontalAlignment="Center"
+                    Spacing="8"
+                    Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay}">
+                    <FontIcon
+                        FontSize="28"
+                        Glyph="&#xE821;"
+                        Opacity="0.4" />
+                    <TextBlock
+                        Style="{StaticResource ChronvyrSubtleTextStyle}"
+                        Text="{x:Bind Loc.T('WorkbenchEmpty')}" />
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>

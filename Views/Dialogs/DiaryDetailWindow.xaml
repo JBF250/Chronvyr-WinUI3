@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="Chronvyr.Views.Dialogs.DiaryDetailWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24,14,24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBox
+            x:Name="TitleBox"
+            Grid.Row="0"
+            FontSize="18"
+            FontWeight="SemiBold"
+            PlaceholderText="日记标题"
+            TextChanged="OnTitleChanged"
+            TextWrapping="Wrap" />
+
+        <!--
+            不拉伸：DatePicker 撑满整行时三列会按模板比例分配，
+            中文下「9月」一列会显得异常宽。给个贴近内容需求的宽度即可。
+        -->
+        <DatePicker
+            x:Name="DatePickerBox"
+            Grid.Row="1"
+            MinWidth="320"
+            Margin="0,10,0,10"
+            HorizontalAlignment="Left"
+            DateChanged="OnDateChanged"
+            Header="日期" />
+
+        <TextBox
+            x:Name="ContentBox"
+            Grid.Row="2"
+            AcceptsReturn="True"
+            PlaceholderText="写下今天…"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            TextChanged="OnContentChanged"
+            TextWrapping="Wrap" />
+    </Grid>
+</Window>

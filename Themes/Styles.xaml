@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.ThemeDictionaries>
+
+        <!--
+            深色主题。
+            配色规则参考 NotchPeninsula：主文字用纯色，其余元素一律由文字色派生透明度，
+            这样深浅两套主题能保持同一套派生关系，不会各自跑偏。
+            副文字不用「65% 白」而用固定的 #C8C8C8 —— 前者叠在深色卡片上会发灰、看久了累。
+        -->
+        <ResourceDictionary x:Key="Default">
+            <SolidColorBrush x:Key="ChronvyrCardBrush" Color="#17FFFFFF" />
+            <SolidColorBrush x:Key="ChronvyrCardStrokeBrush" Color="#26FFFFFF" />
+            <SolidColorBrush x:Key="ChronvyrCardHoverBrush" Color="#1FFFFFFF" />
+            <!--
+                桌面控件专用底色：必须完全不透明。
+                控件的 RequestedTheme 只影响 XAML 内容，不影响由系统绘制的窗口背景，
+                若用半透明底色，窗口背景（跟随系统主题）会透上来造成「浅底白字」。
+            -->
+            <SolidColorBrush x:Key="ChronvyrWidgetBrush" Color="#F21E1E1E" />
+            <!--
+                桌面控件专用描边：比主界面卡片淡得多。
+                主界面卡片用 15% 白描边是为了在 Mica 上分层，但桌面控件本身就是实色卡片，
+                同样的白描边在深色下会变成一圈明显的亮边——用户会觉得「套了个白框」。
+            -->
+            <SolidColorBrush x:Key="ChronvyrWidgetStrokeBrush" Color="#12FFFFFF" />
+            <SolidColorBrush x:Key="ChronvyrSubtleTextBrush" Color="#C8C8C8" />
+            <SolidColorBrush x:Key="ChronvyrAccentTextBrush" Color="#7CC4FF" />
+            <SolidColorBrush x:Key="ChronvyrDividerBrush" Color="#14FFFFFF" />
+            <SolidColorBrush x:Key="ChronvyrHighlightBrush" Color="#14FFFFFF" />
+            <LinearGradientBrush x:Key="ChronvyrSheenBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Offset="0" Color="#22FFFFFF" />
+                <GradientStop Offset="0.45" Color="#08FFFFFF" />
+                <GradientStop Offset="1" Color="#00000000" />
+            </LinearGradientBrush>
+        </ResourceDictionary>
+
+        <!-- 浅色主题：与深色同一套派生关系，副文字用 #505050 -->
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="ChronvyrCardBrush" Color="#B3FFFFFF" />
+            <SolidColorBrush x:Key="ChronvyrCardStrokeBrush" Color="#29000000" />
+            <SolidColorBrush x:Key="ChronvyrCardHoverBrush" Color="#D9FFFFFF" />
+            <SolidColorBrush x:Key="ChronvyrWidgetBrush" Color="#F7FAFAFA" />
+            <SolidColorBrush x:Key="ChronvyrWidgetStrokeBrush" Color="#14000000" />
+            <SolidColorBrush x:Key="ChronvyrSubtleTextBrush" Color="#505050" />
+            <SolidColorBrush x:Key="ChronvyrAccentTextBrush" Color="#0A5BC4" />
+            <SolidColorBrush x:Key="ChronvyrDividerBrush" Color="#14000000" />
+            <SolidColorBrush x:Key="ChronvyrHighlightBrush" Color="#40000000" />
+            <LinearGradientBrush x:Key="ChronvyrSheenBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Offset="0" Color="#59FFFFFF" />
+                <GradientStop Offset="0.45" Color="#1AFFFFFF" />
+                <GradientStop Offset="1" Color="#00FFFFFF" />
+            </LinearGradientBrush>
+        </ResourceDictionary>
+
+    </ResourceDictionary.ThemeDictionaries>
+
+    <!-- 卡片：半透明底 + 清晰的 1px 描边 -->
+    <Style x:Key="ChronvyrCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource ChronvyrCardBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource ChronvyrCardStrokeBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="16" />
+    </Style>
+
+    <!-- 卡片内部的小块（比卡片稍亮/稍暗一档） -->
+    <Style x:Key="ChronvyrInsetStyle" TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource ChronvyrCardHoverBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource ChronvyrCardStrokeBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="14" />
+    </Style>
+
+    <!-- 区块标题 -->
+    <Style x:Key="ChronvyrSectionTitleStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+
+    <!-- 次要说明文字 -->
+    <Style x:Key="ChronvyrSubtleTextStyle" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{ThemeResource ChronvyrSubtleTextBrush}" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <!-- 页面根容器 -->
+    <Style x:Key="ChronvyrPageRootStyle" TargetType="Grid">
+        <Setter Property="Padding" Value="28" />
+    </Style>
+
+    <!--
+        视觉风格选择卡片（FR-7.1）：
+        整块可点的圆角卡片，选中时套一圈强调色描边。
+    -->
+    <Style x:Key="ChronvyrStyleCardStyle" TargetType="RadioButton">
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="MinWidth" Value="150" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid>
+                        <Border
+                            x:Name="CardSurface"
+                            Background="{ThemeResource ChronvyrCardBrush}"
+                            BorderBrush="{ThemeResource ChronvyrCardStrokeBrush}"
+                            BorderThickness="1"
+                            CornerRadius="12" />
+                        <Border
+                            x:Name="SelectionRing"
+                            BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                            BorderThickness="2"
+                            CornerRadius="12"
+                            Visibility="Collapsed" />
+                        <ContentPresenter
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Center" />
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CheckStates">
+                                <VisualState x:Name="Checked">
+                                    <VisualState.Setters>
+                                        <Setter Target="SelectionRing.Visibility" Value="Visible" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Unchecked" />
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

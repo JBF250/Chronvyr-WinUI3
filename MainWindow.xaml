@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="Chronvyr.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:tb="using:H.NotifyIcon"
+    mc:Ignorable="d"
+    Title="Chronvyr">
+
+    <Grid x:Name="RootGrid" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 系统托盘图标（FR-8） -->
+        <tb:TaskbarIcon x:Name="TrayIcon" ToolTipText="Chronvyr" />
+
+        <!-- 自绘标题栏：系统标题栏已关闭，这里承担拖动与窗口按钮 -->
+        <Grid
+            x:Name="AppTitleBar"
+            Grid.Row="0"
+            Height="40"
+            Background="Transparent"
+            PointerPressed="OnTitleBarPointerPressed"
+            PointerMoved="OnTitleBarPointerMoved"
+            PointerReleased="OnTitleBarPointerReleased"
+            PointerCaptureLost="OnTitleBarPointerCaptureLost">
+            <StackPanel
+                Margin="14,0,0,0"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="9">
+                <Image
+                    Width="16"
+                    Height="16"
+                    Source="ms-appx:///Assets/Chronvyr.png" />
+                <TextBlock
+                    x:Name="TitleBarText"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Text="Chronvyr" />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="CaptionButtons"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+                <Button
+                    x:Name="MinimizeButton"
+                    Width="46"
+                    Height="40"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="OnMinimizeClick"
+                    CornerRadius="0"
+                    ToolTipService.ToolTip="最小化">
+                    <FontIcon FontSize="11" Glyph="&#xE921;" />
+                </Button>
+                <Button
+                    x:Name="MaximizeButton"
+                    Width="46"
+                    Height="40"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="OnMaximizeClick"
+                    CornerRadius="0"
+                    ToolTipService.ToolTip="最大化">
+                    <FontIcon x:Name="MaximizeIcon" FontSize="11" Glyph="&#xE922;" />
+                </Button>
+                <Button
+                    x:Name="CloseButton"
+                    Width="46"
+                    Height="40"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="OnCloseClick"
+                    CornerRadius="0"
+                    ToolTipService.ToolTip="关闭到托盘">
+                    <FontIcon FontSize="11" Glyph="&#xE8BB;" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- 液态玻璃高光层：位于材质之上、内容之下 -->
+        <Border
+            x:Name="SheenLayer"
+            Grid.Row="1"
+            Background="{ThemeResource ChronvyrSheenBrush}"
+            IsHitTestVisible="False"
+            Opacity="0" />
+
+        <NavigationView
+            x:Name="NavView"
+            Grid.Row="1"
+            Background="Transparent"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="False"
+            IsPaneToggleButtonVisible="True"
+            OpenPaneLength="200"
+            PaneDisplayMode="Left"
+            SelectionChanged="OnNavSelectionChanged">
+
+            <NavigationView.Resources>
+                <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent" />
+                <SolidColorBrush x:Key="NavigationViewContentGridBorderBrush" Color="Transparent" />
+            </NavigationView.Resources>
+
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="首页" Tag="home">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE80F;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="日历" Tag="calendar">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE787;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="日程" Tag="schedule">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8FD;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="日记" Tag="diary">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE70B;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="番茄钟" Tag="pomodoro">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE916;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="工作台" Tag="workbench">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE821;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem Content="设置" Tag="settings">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE713;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.FooterMenuItems>
+
+            <Frame x:Name="ContentFrame" />
+        </NavigationView>
+    </Grid>
+</Window>
